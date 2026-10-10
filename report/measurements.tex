@@ -1,0 +1,59 @@
+% Every number in the report comes from here. A slot still holding \bench{}
+% has not been measured yet, and `make check` lists it.
+% Replace the whole \bench{...} with the reading, units out of the macro.
+
+% Header
+\newcommand{\mDate}{\bench{date}}
+\newcommand{\mBuild}{\bench{Debug or Release}}
+
+% Reference and predictions
+\newcommand{\mVr}{\bench{VR}}
+\newcommand{\mDmmRange}{\bench{DMM range and resolution}}
+\newcommand{\mLsb}{\bench{VR/4096}}
+\newcommand{\mCoarseStep}{\bench{VR/64}}
+
+% DC row 1, target 0.800 V
+\newcommand{\mLoFullIn}{\bench{PA5}}
+\newcommand{\mLoFullC}{\bench{C}}
+\newcommand{\mLoFullD}{\bench{D}}
+\newcommand{\mLoFullPred}{\bench{D VR/4096}}
+\newcommand{\mLoFullOut}{\bench{PA4}}
+\newcommand{\mLoCoarseIn}{\bench{PA5}}
+\newcommand{\mLoCoarseC}{\bench{C}}
+\newcommand{\mLoCoarseD}{\bench{D}}
+\newcommand{\mLoCoarsePred}{\bench{D VR/4096}}
+\newcommand{\mLoCoarseOut}{\bench{PA4}}
+
+% DC row 2, target 1.650 V
+\newcommand{\mMidFullIn}{\bench{PA5}}
+\newcommand{\mMidFullC}{\bench{C}}
+\newcommand{\mMidFullD}{\bench{D}}
+\newcommand{\mMidFullPred}{\bench{D VR/4096}}
+\newcommand{\mMidFullOut}{\bench{PA4}}
+\newcommand{\mMidCoarseIn}{\bench{PA5}}
+\newcommand{\mMidCoarseC}{\bench{C}}
+\newcommand{\mMidCoarseD}{\bench{D}}
+\newcommand{\mMidCoarsePred}{\bench{D VR/4096}}
+\newcommand{\mMidCoarseOut}{\bench{PA4}}
+
+% DC row 3, target 2.500 V
+\newcommand{\mHiFullIn}{\bench{PA5}}
+\newcommand{\mHiFullC}{\bench{C}}
+\newcommand{\mHiFullD}{\bench{D}}
+\newcommand{\mHiFullPred}{\bench{D VR/4096}}
+\newcommand{\mHiFullOut}{\bench{PA4}}
+\newcommand{\mHiCoarseIn}{\bench{PA5}}
+\newcommand{\mHiCoarseC}{\bench{C}}
+\newcommand{\mHiCoarseD}{\bench{D}}
+\newcommand{\mHiCoarsePred}{\bench{D VR/4096}}
+\newcommand{\mHiCoarseOut}{\bench{PA4}}
+
+% Triangle and step
+\newcommand{\mGenFreq}{\bench{Hz}}
+\newcommand{\mGenVpp}{\bench{Vpp}}
+\newcommand{\mGenOffset}{\bench{offset}}
+\newcommand{\mPaMin}{\bench{PA5 min}}
+\newcommand{\mPaMax}{\bench{PA5 max}}
+\newcommand{\mStepMeasured}{\bench{measured step}}
+\newcommand{\mStepDelta}{\bench{measured minus predicted}}
+\newcommand{\mStepPct}{\bench{percent}}
