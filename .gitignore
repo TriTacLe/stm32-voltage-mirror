@@ -1,0 +1,23 @@
+# build output
+build/
+Debug/
+Release/
+
+# local editor / OS metadata
+.DS_Store
+*.swp
+*~
+
+# latex build output
+report/*.aux
+report/*.log
+report/*.out
+report/*.pdf
+
+# page renders used to proof the layout
+report/page-*.png
+report/chk-*.png
+
+# editor and tooling scratch created inside subdirectories
+**/.claude/
+**/.mcp.json
