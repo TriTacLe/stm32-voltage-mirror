@@ -1,8 +1,8 @@
-% EEE3096S Practical 3: replace every blank with your own measured results.
-% Place full12.png and coarse6.png alongside this file, or in docs/ when
-% compiling from the practical root. Missing images produce safe placeholders.
-% Compile from this directory: tectonic report_template.tex
-% Keep this report to the measurements, two captures, and one page of explanation.
+% EEE3096S Practical 3, Voltage Mirror. Group 79.
+% Every measured number lives in measurements.tex, never in this file.
+% Captures go in figures/ as full12.png and coarse6.png.
+%   make        build the PDF
+%   make check  build, then list what is still unmeasured or missing
 \documentclass[11pt,a4paper]{article}
 \usepackage{lmodern}
 \usepackage[margin=20mm]{geometry}
@@ -10,106 +10,120 @@
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{graphicx}
+\usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
 \renewcommand{\arraystretch}{1.4}
-\newcommand{\blank}[1][27mm]{\rule{#1}{0.4pt}}
+
+% An unfilled measurement. Impossible to miss in a proof read.
+\newcommand{\bench}[1]{\textcolor{red}{\textbf{[BENCH: #1]}}}
+
 \newcommand{\captureplaceholder}[2]{%
   \fbox{\parbox[c][0.26\textheight][c]{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
-    \centering #2\par\medskip
-    Replace with your own oscilloscope capture.\par
-    Save it as \texttt{\detokenize{#1}}.}}}
+    \centering \textcolor{red}{\textbf{#2}}\par\medskip
+    Not captured yet. Save it as \texttt{\detokenize{#1}}.}}}
 \newcommand{\capture}[2]{%
   \IfFileExists{#1}{%
     \includegraphics[width=\linewidth,height=0.26\textheight,keepaspectratio]{#1}}{%
-    \IfFileExists{docs/#1}{%
-      \includegraphics[width=\linewidth,height=0.26\textheight,keepaspectratio]{docs/#1}}{%
-      \captureplaceholder{#1}{#2}}}}
+    \captureplaceholder{#1}{#2}}}
+
+\input{measurements}
 
 \begin{document}
 \begin{center}
   {\Large\bfseries EEE3096S Practical 3 --- Voltage Mirror}\par
-  Student report template
+  Tri Tac Le, LXXTRI004 \quad Gil Sharon, SHRGIL004 \quad Group 79
 \end{center}
-Names/student numbers: \blank[105mm]\par
-Date: \blank[35mm]\qquad Build configuration: \blank[45mm]
+Date: \mDate \qquad Build configuration: \mBuild
 
-\textbf{Assessment: live demonstration 80 marks; report 20 marks.}
-Enter your own measurements. Suggested input levels are setup targets, not results.
-Submit the four completed functions with this report.
+ADC channel 5 on PA5 is read at 2000 samples per second and the code is written
+to DAC channel 1 on PA4. SW0 selects the mapping. Both converters are configured
+for 12 bits and stay that way; COARSE6 discards the six least significant bits in
+software only.
 
-\section*{1. Measurements and predictions (8 report marks)}
-Measured analogue reference $V_R$: \blank\ V\par
-DMM range/resolution: \blank[75mm]\par
-Nominal ADC/DAC interval $V_R/4096$: \blank\ mV\par
-Predicted coarse output step $V_R/64$: \blank\ mV
+\section*{1. Measurements and predictions}
 
-Measure PA5 and PA4 independently with the DMM. Record the actual LCD codes.
-Calculate the nominal DAC output $D V_R/4096$ from each recorded command.
+Measured analogue reference $V_R$: \mVr\par
+DMM range and resolution: \mDmmRange\par
+Nominal converter interval $V_R/4096$: \mLsb\par
+Predicted coarse output step $V_R/64$: \mCoarseStep
+
+PA5 and PA4 were measured independently with the DMM. $C$ and $D$ are the codes
+shown on the LCD. The predicted output is $D\,V_R/4096$ using the recorded command
+and the measured reference.
 
 {\small
 \begin{tabularx}{\linewidth}{@{}l l X r r X X@{}}
 \toprule
-Input target & Mode & Measured PA5 (V) & $C$ & $D$ & Predicted PA4 (V) & Measured PA4 (V) \\
+Input target & Mode & PA5 (V) & $C$ & $D$ & Predicted PA4 (V) & PA4 (V) \\
 \midrule
-$\sim$0.800 V & FULL12  & & & & & \\
-$\sim$0.800 V & COARSE6 & & & & & \\
-$\sim$1.650 V & FULL12  & & & & & \\
-$\sim$1.650 V & COARSE6 & & & & & \\
-$\sim$2.500 V & FULL12  & & & & & \\
-$\sim$2.500 V & COARSE6 & & & & & \\
+$\sim$0.800 V & FULL12  & \mLoFullIn   & \mLoFullC   & \mLoFullD   & \mLoFullPred   & \mLoFullOut \\
+$\sim$0.800 V & COARSE6 & \mLoCoarseIn & \mLoCoarseC & \mLoCoarseD & \mLoCoarsePred & \mLoCoarseOut \\
+$\sim$1.650 V & FULL12  & \mMidFullIn   & \mMidFullC   & \mMidFullD   & \mMidFullPred   & \mMidFullOut \\
+$\sim$1.650 V & COARSE6 & \mMidCoarseIn & \mMidCoarseC & \mMidCoarseD & \mMidCoarsePred & \mMidCoarseOut \\
+$\sim$2.500 V & FULL12  & \mHiFullIn   & \mHiFullC   & \mHiFullD   & \mHiFullPred   & \mHiFullOut \\
+$\sim$2.500 V & COARSE6 & \mHiCoarseIn & \mHiCoarseC & \mHiCoarseD & \mHiCoarsePred & \mHiCoarseOut \\
 \bottomrule
 \end{tabularx}}
 
-Generator: \blank[18mm]\ Hz; \blank[18mm]\ Vpp; \blank[18mm]\ V offset\par
-Verified PA5 minimum/maximum: \blank\ / \blank\ V\par
-Measured adjacent coarse step: \blank\ mV\par
-Measured minus predicted step: \blank\ mV\par
-Percentage difference $100(\Delta V_{\rm measured}-\Delta V_{\rm predicted})/
-\Delta V_{\rm predicted}$: \blank[18mm]\ \%
+Generator: \mGenFreq, \mGenVpp, \mGenOffset\par
+Verified PA5 minimum and maximum: \mPaMin\ and \mPaMax\par
+Measured adjacent coarse step: \mStepMeasured\par
+Measured minus predicted: \mStepDelta, which is \mStepPct
 
 \newpage
-\section*{2. Two real scope captures (6 report marks)}
-Label PA5 input and PA4 output, modes, voltage scales and time scales.
-Use your own captures; simulated illustrations are not experimental evidence.
+\section*{2. Scope captures}
 
 \begin{center}
-\capture{full12.png}{FULL12: input and output over approximately one triangle cycle}
+\capture{figures/full12.png}{Capture 1, FULL12}
 \end{center}
-\textbf{Capture 1 --- FULL12.} Show both traces over approximately one cycle.
-The small individual 12-bit steps need not be resolved.
+\textbf{Capture 1, FULL12.} PA5 on CH1 and PA4 on CH2, DC coupled, over about one
+triangle cycle. The individual 12-bit steps are smaller than the scope resolves.
 
 \begin{center}
-\capture{coarse6.png}{COARSE6: adjacent settled plateaus and voltage cursors}
+\capture{figures/coarse6.png}{Capture 2, COARSE6}
 \end{center}
-\textbf{Capture 2 --- COARSE6.} Show both channels, adjacent settled output
-plateaus and the cursor measurement used for your step comparison.
+\textbf{Capture 2, COARSE6.} The same two channels, zoomed until adjacent output
+plateaus separate, with voltage cursors across two settled plateaus. The cursor
+reading is the measured step above.
 
 \newpage
-\section*{3. Explanation (6 report marks; at most one page)}
-Replace the prompts and blank spaces with concise answers supported by your
-measurements. Keep the whole written explanation on this page.
+\section*{3. Explanation}
 
-\textbf{Mapping.} State your FULL12 and COARSE6 relationships. How many distinct
-coarse commands exist, what is their spacing, and why is the maximum 4032?
-\vspace{18mm}
+\textbf{Mapping.} FULL12 is $D = C$. COARSE6 is $D = 64\lfloor C/64 \rfloor$,
+implemented by clearing the six least significant bits of the code rather than by
+changing either converter's resolution. That leaves 64 distinct commands, spaced
+64 codes or \mCoarseStep\ apart. The largest is 4032 because 4032 is $63 \times 64$
+and the next multiple of 64 is 4096, which is past the highest 12-bit code of 4095.
+There are 4096 codes but the highest code is 4095, which is why the count and the
+maximum differ.
 
-\textbf{Measured steps.} Compare the measured coarse step with $V_R/64$.
-Use your readings and instrument limits to discuss any difference.
-\vspace{18mm}
+\textbf{Measured steps.} The measured plateau spacing is \mStepMeasured\ against the
+predicted $V_R/64 = \mCoarseStep$, a difference of \mStepDelta. The prediction uses
+the nominal model $V = D\,V_R/4096$, so it carries the reference measurement's own
+uncertainty, and the cursor can only be placed to the scope's vertical resolution on
+a trace that still has noise on it. Buffer offset and the loading of the probe move
+the absolute level more than they move the spacing between two neighbouring
+plateaus, which is why the step compares better than any single absolute reading.
 
-\textbf{Resolution and accuracy.} Explain why a smooth FULL12 trace does not
-establish continuous voltage resolution, and why 12-bit resolution does not
-guarantee voltage accuracy. Both hardware converters stay at 12 bits.
-\vspace{18mm}
+\textbf{Resolution and accuracy.} The FULL12 trace looks continuous because its step
+is $V_R/4096 = \mLsb$, below what the scope resolves on this timebase and smaller
+than the noise on the trace, not because the output is continuous. It is still 4096
+discrete levels. Resolution is only the size of the step; accuracy is whether the
+step lands at the right voltage. A 12-bit converter with an offset, a gain error or
+an uncertain reference still has 4096 levels and still produces the wrong voltage at
+each one. Both converters share this board's reference, so a code copied from ADC to
+DAC gives a nominally unity transfer and the shared reference cancels out of the
+ratio. That cancellation says nothing about either converter's absolute accuracy.
 
-\textbf{One DC result.} Compare $C V_R/4096$ with measured input, and
-$D V_R/4096$ with measured output. Explain why copying the code does not
-guarantee identical physical voltages.
-\vspace{18mm}
+\textbf{One DC result.} At the 0.800 V target the ADC estimate is
+$C\,V_R/4096$ from $C = \mLoFullC$ against a measured input of \mLoFullIn, and the
+nominal output is $D\,V_R/4096 = \mLoFullPred$ from $D = \mLoFullD$ against a
+measured output of \mLoFullOut. Copying the code does not guarantee the same
+physical voltage: the ADC quantises the input to the nearest code and loses
+everything inside that interval, and the DAC then adds its own offset, gain error
+and output buffer behaviour on the way back out. The code is the same number at both
+ends, but the two conversions are separate physical operations with separate errors.
 
-\textit{Live demonstration: prepare all three DC levels; show one safe
-tutor-selected input and both triangle modes. Explain the actual codes,
-$V_R/64$ step prediction, ADC/DAC register fields, bounded wait and W1C flags.}
 \end{document}
