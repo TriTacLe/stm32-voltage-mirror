@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# the jobs only build and check, nothing writes back to the repo
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # cc is already on the runner image, so the mapping check needs nothing
+      - name: Host mapping and bounded-write checks
+        working-directory: Practical3
+        run: |
+          make test | tee result.txt
+          {
+            echo '### Host checks'
+            echo '```'
+            cat result.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # apt for the toolchain took eighteen minutes on a prac 1 run, so the
+      # cached action is used instead
+      - name: Install the ARM toolchain
+        uses: carlosperate/arm-none-eabi-gcc-action@98c40e51546516419841748d3210c290df0d2c6c # v1.13.0
+        with:
+          release: "10.3-2021.10"
+
+      - name: Build both configurations
+        working-directory: Practical3
+        run: |
+          echo '### Code size, C6 has 32 KiB flash and 8 KiB RAM' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          for cfg in Debug Release; do
+            make -j"$(nproc)" CONFIG=$cfg >/dev/null
+            printf '%-8s %s\n' "$cfg" \
+              "$(arm-none-eabi-size build/$cfg/student/Practical3.elf | tail -1)" \
+              >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            Practical3/build/*/student/Practical3.elf
+            Practical3/build/*/student/Practical3.bin
+
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # only what the preamble loads. texlive-latex-extra is about a gigabyte
+      # and nothing in this report comes from it
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-recommended texlive-fonts-recommended \
+            poppler-utils
+
+      # the Prac 3 brief names no filename, so this holds us to the shape the
+      # Prac 1B and Prac 2 briefs did specify
+      - name: Check the report filename
+        working-directory: report
+        run: |
+          tex=$(ls prac_03_*.tex)
+          echo "found $tex"
+          echo "$tex" | grep -Eq '^prac_03_[a-z]{6}[0-9]{3}_[a-z]{6}[0-9]{3}\.tex$'
+
+      - name: Compile
+        working-directory: report
+        run: |
+          pdflatex -interaction=nonstopmode -halt-on-error prac_03_lxxtri004_shrgil004.tex >/dev/null
+          pdflatex -interaction=nonstopmode -halt-on-error prac_03_lxxtri004_shrgil004.tex | tail -3
+
+      - name: Fail on unresolved references
+        working-directory: report
+        run: |
+          if grep -q 'undefined references' prac_03_lxxtri004_shrgil004.log; then
+            grep -n 'undefined\|Warning: Reference' prac_03_lxxtri004_shrgil004.log
+            exit 1
+          fi
+
+      # not a failure: the report is meant to be unfilled until the bench
+      - name: Count what still needs the bench
+        working-directory: report
+        run: |
+          left=$(grep -c '^.newcommand.*.bench{' measurements.tex || true)
+          pages=$(pdfinfo prac_03_lxxtri004_shrgil004.pdf | awk '/^Pages/{print $2}')
+          over=$(grep -c Overfull prac_03_lxxtri004_shrgil004.log || true)
+          {
+            echo '### Report'
+            echo "Pages: ${pages:-unknown}"
+            echo "Overfull boxes: $over"
+            echo "Measurements still unfilled: $left"
+            for f in figures/full12.png figures/coarse6.png; do
+              [ -f "$f" ] || echo "Missing capture: $f"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prac3-report
+          path: report/prac_03_lxxtri004_shrgil004.pdf
