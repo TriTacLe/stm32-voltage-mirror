@@ -29,11 +29,12 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       # apt for the toolchain took eighteen minutes on a prac 1 run, so the
-      # cached action is used instead
+      # cached action is used instead. GCC 11 is the floor: the supplied
+      # STM32F051C6TX_FLASH.ld uses the READONLY keyword, which older ld rejects
       - name: Install the ARM toolchain
         uses: carlosperate/arm-none-eabi-gcc-action@98c40e51546516419841748d3210c290df0d2c6c # v1.13.0
         with:
-          release: "10.3-2021.10"
+          release: "12.3.Rel1"
 
       - name: Build both configurations
         working-directory: Practical3
@@ -81,7 +82,7 @@ jobs:
       - name: Compile
         working-directory: report
         run: |
-          pdflatex -interaction=nonstopmode -halt-on-error prac_03_lxxtri004_shrgil004.tex >/dev/null
+          pdflatex -interaction=nonstopmode -halt-on-error prac_03_lxxtri004_shrgil004.tex | tail -25
           pdflatex -interaction=nonstopmode -halt-on-error prac_03_lxxtri004_shrgil004.tex | tail -3
 
       - name: Fail on unresolved references
