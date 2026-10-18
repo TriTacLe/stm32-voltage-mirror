@@ -30,7 +30,12 @@ Keep the C6 startup and `STM32F051C6TX_FLASH.ld`: 32 KiB flash, 8 KiB RAM. Impor
 the CubeIDE project as supplied. Regenerating from the `.ioc` overwrites the
 supplied clock, LCD, button and sampling infrastructure.
 
-No measured value enters the report without the instrument reading behind it.
+The report that was actually submitted is `report/submitted/Practical3_report.pdf`,
+handed in 16 October 2026. It was written separately rather than from the scaffold in
+`report/`, so that scaffold still has every measurement slot empty and is kept only as
+the LaTeX skeleton. Read the submitted PDF for what the group reported.
+
+No measured value enters a report without the instrument reading behind it.
 Every number lives in `report/measurements.tex`, and a slot still holding
 `\bench{}` is one that has not been measured. The bench runbook is
 `pracs/prac-3/Prac3-runbook.md` in the course vault.
